@@ -1,13 +1,15 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0-windows</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>NeatCapital OÜ</Authors>
     <Company>NeatCapital OÜ</Company>
     <Copyright>(c) 2021 NeatCapital OÜ</Copyright>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <Version>1.0.1</Version>
+    <Description>WPF Components</Description>
   </PropertyGroup>
 
   <ItemGroup>
