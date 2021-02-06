@@ -8,7 +8,7 @@
     <Company>NeatCapital OÜ</Company>
     <Copyright>(c) 2021 NeatCapital OÜ</Copyright>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <Description>WPF Components</Description>
   </PropertyGroup>
 
