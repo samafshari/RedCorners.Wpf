@@ -8,6 +8,7 @@
     <Copyright>(c) 2021 NeatCapital OU</Copyright>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <PackageProjectUrl>https://redcorners.com</PackageProjectUrl>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Linq;
 using System.Windows.Input;
+using System.Reflection;
 
 namespace RedCorners.Wpf
 {
@@ -55,30 +56,54 @@ namespace RedCorners.Wpf
     public partial class ViewModel : INotifyPropertyChanged
     {
         public static Action<Action> DefaultDispatchAction = a => System.Windows.Threading.Dispatcher.CurrentDispatcher.Invoke(a);
+        public static bool DispatchOnSetProperty = true;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        PropertyInfo[] propertyInfos;
 
         public virtual void Dispatch(Action a)
         {
             DefaultDispatchAction?.Invoke(a);
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public void RaisePropertyChanged([CallerMemberName] string m = null) =>
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(m));
+        public void RaisePropertyChanged([CallerMemberName] string m = null, bool? dispatch = null)
+        {
+            if (dispatch ?? DispatchOnSetProperty)
+            {
+                Dispatch(() =>
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(m)));
+            }
+            else
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(m));
+            }
+        }
 
         public ViewModel() { }
 
-        protected virtual void SetProperty<T>(ref T storage, T value, [CallerMemberName] string propertyName = null)
+        protected virtual void SetProperty<T>(ref T storage, T value, [CallerMemberName] string propertyName = null, bool? dispatch = null)
         {
+
             storage = value;
-            RaisePropertyChanged(propertyName);
+            if (dispatch ?? DispatchOnSetProperty)
+            {
+                Dispatch(() => RaisePropertyChanged(propertyName));
+            }
+            else
+            {
+                RaisePropertyChanged(propertyName);
+            }
         }
 
         public void UpdateProperties(bool forceAll = false)
         {
             Dispatch(() =>
             {
-                foreach (var item in GetType().GetProperties())
+                if (propertyInfos == null)
+                    propertyInfos = GetType().GetProperties();
+
+                foreach (var item in propertyInfos)
                 {
                     if (item.GetCustomAttributes(typeof(NoUpdate), true).Any())
                         continue;
@@ -87,7 +112,7 @@ namespace RedCorners.Wpf
                     if (item.PropertyType.IsAssignableFrom(typeof(ICommand)) && !item.GetCustomAttributes(typeof(Updates), true).Any())
                         continue;
 
-                    RaisePropertyChanged(item.Name);
+                    RaisePropertyChanged(item.Name, dispatch: false);
                 }
             });
         }
@@ -97,7 +122,7 @@ namespace RedCorners.Wpf
             Dispatch(() =>
             {
                 foreach (var item in names)
-                    RaisePropertyChanged(item);
+                    RaisePropertyChanged(item, dispatch: false);
             });
         }
     }
